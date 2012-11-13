@@ -1,4 +1,15 @@
-menu = [
+mainmenu = [
+    name:"showname"
+    description: "contains commands about item1"
+    help: "contains commands about item1"
+,
+    name:"showid"
+    description: "contains commands about item2"
+    help: "contains commands about item2"
+
+]
+
+name = [
     name:"testname"
     description: "Test function"
     help: "testhelp"
@@ -12,6 +23,26 @@ menu = [
     help: "No arguments required"
 ]
 
+
+
+id = [
+    name:"testid"
+    description: "Test function"
+    help: "testhelp"
+,
+    name:"printid"
+    description: "prints name"
+    help: "testhelp"
+,
+    name: "showmenu"
+    description: "show the menu items"
+    help: "No arguments required"
+]
+
+currentmenu= mainmenu
+defaultoptions = ".exit .quit .q .mainmenu "
+options= defaultoptions
+
 testname = ->
     console.log 'testname'
 testfn = ->
@@ -24,23 +55,43 @@ printname = (arr) ->
     console.log 'in the function printname'
     console.log arr
 
+printid= ->
+    console.log 'in the funciton printid'
+
+
+testid = ->
+    console.log 'in the funciton testid'
+
+
+showid= ->
+    menuoptions = fillcompleter id
+    currentmenu = id
+    options = defaultoptions + menuoptions
+    showmenu()
+
+showname = ->
+    menuoptions = fillcompleter name
+    currentmenu = name
+    options = defaultoptions + menuoptions
+    showmenu()
+
+
 showmenu = ->
     result = ""
-    for index in menu
-        result += "#{index.name}\t#{index.description}\n"
+    for index in currentmenu
+        result += "#{index.name}\t\t#{index.description}\n"
         #console.log index
    
     console.log result
 
-defaultoptions = ".exit .quit .q"
-options= ""
 
-fillcompleter = ->
-    for index in menu
-        options += "#{index.name} " 
-    options += defaultoptions
-    console.log 'options: ' + options
+fillcompleter = (imenu) ->
+    menuoptions = ""
+    for index in imenu
+        menuoptions += "#{index.name} "
+    return menuoptions
 
+options += fillcompleter(mainmenu)
 autocomplete = (line) ->
     completions = options.split(" ")
     hits = completions.filter((c) ->
@@ -50,13 +101,13 @@ autocomplete = (line) ->
     [(if hits.length then hits else completions), line]
 
 
-getMenuItem = (cmd) ->
-    for index in menu
+getMenuItem = (cmd, imenu) ->
+    for index in imenu
         if index.name == cmd
             return index
 
 readline = require 'readline'
-fillcompleter()
+
 rl = readline.createInterface process.stdin, process.stdout, autocomplete
 rl.setPrompt 'CLI>'
 rl.prompt()
@@ -65,7 +116,7 @@ rl.on('line', (line) ->
     cmd = line.trim()
     arr = cmd.split(" ")
     cmd = arr[0]
-    item = getMenuItem (arr[0])
+    item = getMenuItem arr[0], currentmenu
     if item
         switch (arr[1])
             when '?', 'help'
@@ -81,6 +132,12 @@ rl.on('line', (line) ->
         switch (cmd)
             when 'quit', 'q' , 'exit'
                 process.exit 0
+            when 'mainmenu'
+                currentmenu = mainmenu
+                options = fillcompleter mainmenu
+                options += defaultoptions
+            else
+                console.log 'unsupported command'
 
     rl.prompt()
 ).on 'close', ->
