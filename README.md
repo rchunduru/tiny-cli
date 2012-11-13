@@ -5,7 +5,7 @@ Tiny CLI is a minimal CLI implementation in Coffee script. It shows menu items, 
 
 sample-output
 =============
-
+```
  $ coffee cli.coffee 
 options: testname printname showmenu .exit .quit .q
 CLI>testname
@@ -18,7 +18,7 @@ printname	prints name
 showmenu	show the menu items
 
 CLI>
-
+```
 
 
 
